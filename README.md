@@ -75,44 +75,6 @@ In simple terms:
 
 ---
 
-## Project Structure
-
-The project is organized like this:
-
-```text
-products-api/
-│
-├── pom.xml
-├── mule-artifact.json
-│
-├── src/
-│   ├── main/
-│   │   ├── mule/
-│   │   │   ├── products-api.xml
-│   │   │   └── flows/
-│   │   │       └── get-products.xml
-│   │   │
-│   │   ├── java/
-│   │   │   └── products/
-│   │   │       ├── Product.java
-│   │   │       └── ProductService.java
-│   │   │
-│   │   └── resources/
-│   │       └── config/
-│   │           ├── local.properties
-│   │           └── local.example.properties
-│   │
-│   └── test/
-│       ├── java/
-│       ├── resources/
-│       └── munit/
-│
-├── exchange-docs/
-└── target/
-```
-
----
-
 ## Important Files
 
 ### `products-api.xml`
@@ -321,44 +283,6 @@ GET http://localhost:8081/api/products
 
 This request enters the application through the HTTP listener in `products-api.xml`.
 
-Example:
-
-```xml
-<flow name="products-api-main">
-    <http:listener config-ref="products-api-httpListenerConfig" path="/api/*">
-        <http:response statusCode="#[vars.httpStatus default 200]">
-            <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-        </http:response>
-        <http:error-response statusCode="#[vars.httpStatus default 500]">
-            <http:body>#[payload]</http:body>
-            <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-        </http:error-response>
-    </http:listener>
-
-    <apikit:router config-ref="products-api-config" />
-</flow>
-```
-
-The important part is:
-
-```xml
-<http:listener config-ref="products-api-httpListenerConfig" path="/api/*">
-```
-
-This tells Mule:
-
-```text
-Listen for requests under /api.
-```
-
-So this URL:
-
-```http
-http://localhost:8081/api/products
-```
-
-matches the listener.
-
 ---
 
 ### Step 2: APIkit Routes the Request
@@ -461,10 +385,11 @@ vars.products
 </sub-flow>
 ```
 
-This does two things:
+This does three things:
 
-1. Calls a Java static method.
-2. Takes the result from Java and sets it as the HTTP response payload.
+1. Reads the local.properties file to get database config information and passes it into the Java service method.
+2. Calls the Java static method.
+3. Takes the result from Java and sets it as the HTTP response payload.
 
 The Java method is:
 
@@ -490,89 +415,6 @@ vars.products
 
 The Java service connects to H2 using JDBC.
 
-Example:
-
-```java
-public static List<Product> getActiveProducts(
-    String jdbcUrl,
-    String user,
-    String password
-) throws SQLException {
-    List<Product> products = new ArrayList<Product>();
-
-    String sql =
-        "SELECT " +
-        "Id, " +
-        "Name, " +
-        "Sku, " +
-        "Price, " +
-        "Active " +
-        "FROM Products " +
-        "WHERE Active = TRUE " +
-        "ORDER BY Id";
-
-    Connection connection = null;
-    PreparedStatement statement = null;
-    ResultSet resultSet = null;
-
-    try {
-        connection = DriverManager.getConnection(jdbcUrl, user, password);
-        statement = connection.prepareStatement(sql);
-        resultSet = statement.executeQuery();
-
-        while (resultSet.next()) {
-            Product product = new Product(
-                resultSet.getLong("Id"),
-                resultSet.getString("Name"),
-                resultSet.getString("Sku"),
-                resultSet.getBigDecimal("Price"),
-                resultSet.getBoolean("Active")
-            );
-
-            products.add(product);
-        }
-
-        return products;
-    } finally {
-        if (resultSet != null) {
-            resultSet.close();
-        }
-
-        if (statement != null) {
-            statement.close();
-        }
-
-        if (connection != null) {
-            connection.close();
-        }
-    }
-}
-```
-
-This method:
-
-1. Opens a database connection.
-2. Runs a SQL query.
-3. Filters active products using SQL.
-4. Maps each database row to a `Product` Java object.
-5. Returns a list of products to Mule.
-
----
-
-## Configuration
-
-Configuration values should not be hard-coded in Java.
-
-Instead of this:
-
-```java
-private static final String JDBC_URL = "jdbc:h2:file:C:/temp/products-db;AUTO_SERVER=TRUE";
-private static final String USER = "sa";
-private static final String PASSWORD = "";
-```
-
-this project uses Mule properties.
-
 ---
 
 ### `local.properties`
@@ -583,7 +425,6 @@ Example:
 db.jdbcUrl=jdbc:h2:file:C:/temp/products-db;AUTO_SERVER=TRUE
 db.user=sa
 db.password=
-
 http.host=0.0.0.0
 http.port=8081
 ```
@@ -636,7 +477,7 @@ That means Mule reads the properties and passes them into Java.
 
 ## Database
 
-This project uses **H2**, a lightweight Java database.
+For local development, this project uses **H2**, a lightweight Java database.
 
 H2 is useful for local development because:
 
@@ -665,37 +506,9 @@ C:/temp/products-db.mv.db
 
 ---
 
-### Example Products Table
-
-```sql
-CREATE TABLE Products (
-    Id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
-    Sku VARCHAR(100) NOT NULL,
-    Price DECIMAL(10,2) NOT NULL,
-    Active BOOLEAN NOT NULL DEFAULT TRUE
-);
-```
-
----
-
-### Example Inserts
-
-```sql
-INSERT INTO Products (Name, Sku, Price, Active)
-VALUES ('Active Product', 'SKU-ACTIVE-001', 19.99, TRUE);
-
-INSERT INTO Products (Name, Sku, Price, Active)
-VALUES ('Inactive Product', 'SKU-INACTIVE-001', 29.99, FALSE);
-```
-
-The API currently returns only active products.
-
----
-
 ## Using DBeaver with H2
 
-DBeaver can connect to the H2 database.
+DBeaver can connect to the H2 database as a graphical database management tool (similar to SSMS)
 
 Use these settings:
 
@@ -703,7 +516,7 @@ Use these settings:
 Driver: H2
 JDBC URL: jdbc:h2:file:C:/temp/products-db;AUTO_SERVER=TRUE
 User: sa
-Password: blank
+Password: blank (or use a password)
 ```
 
 Make sure the JDBC URL in DBeaver matches the JDBC URL in Mule exactly.
@@ -714,7 +527,7 @@ If the paths are different, Mule and DBeaver may connect to different H2 databas
 
 ## Maven and Package Management
 
-This project uses Maven for package management and builds.
+This project uses Maven for package management and builds. (Think of this as npm, or nuget)
 
 The main Maven file is:
 
@@ -866,35 +679,11 @@ http://localhost:8081/api/products
 
 ---
 
-### Test with PowerShell
-
-```powershell
-Invoke-RestMethod -Uri "http://localhost:8081/api/products"
-```
-
----
-
 ### Test with curl
 
 ```bash
 curl http://localhost:8081/api/products
 ```
-
-Expected response:
-
-```json
-[
-  {
-    "id": 1,
-    "name": "Active Product",
-    "sku": "SKU-ACTIVE-001",
-    "price": 19.99,
-    "active": true
-  }
-]
-```
-
-Only products where `Active = TRUE` should be returned.
 
 ---
 
