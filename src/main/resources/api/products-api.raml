@@ -1,0 +1,90 @@
+#%RAML 1.0
+title: Products API
+description: A test API for setting up a local MuleSoft API instance managing products for a fictitious retailer
+version: v1
+baseUri: https://api.example.com/{version}
+
+mediaType:
+  - application/json
+
+protocols:
+  - HTTPS
+
+types:
+  Product: !include models/Product.raml
+  ProductCreateRequest: !include models/ProductCreateRequest.raml
+  ProductUpdateRequest: !include models/ProductUpdateRequest.raml
+
+securitySchemes:
+  basicAuth:
+    type: Basic Authentication
+
+/products:
+  get:
+    displayName: Get Products
+    description: Gets the full list of products.
+    queryParameters:
+      sku?:
+        type: string
+        example: "SKU-001"
+    responses:
+      200:
+        body:
+          application/json:
+            type: Product[]
+    securedBy:
+      - basicAuth
+
+  post:
+    displayName: Create Product
+    description: Creates a new product.
+    body:
+      application/json:
+        type: ProductCreateRequest
+    responses:
+      201:
+        body:
+          application/json:
+            type: Product
+    securedBy:
+      - basicAuth
+
+/products/{id}:
+  uriParameters:
+    id:
+      type: string
+      example: "123"
+
+  get:
+    displayName: Get Product by ID
+    description: Gets a single product by ID.
+    responses:
+      200:
+        body:
+          application/json:
+            type: Product
+    securedBy:
+      - basicAuth
+
+  put:
+    displayName: Update Product
+    description: Updates an existing product.
+    body:
+      application/json:
+        type: ProductUpdateRequest
+    responses:
+      200:
+        body:
+          application/json:
+            type: Product
+    securedBy:
+      - basicAuth
+
+  delete:
+    displayName: Delete Product
+    description: Deletes a product by ID.
+    responses:
+      204:
+        description: Product deleted successfully.
+    securedBy:
+      - basicAuth
