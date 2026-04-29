@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
+        http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+    <sub-flow name="create-product">
+        <ee:transform doc:name="Extract create product request">
+            <ee:variables>
+                <ee:set-variable variableName="productName"><![CDATA[%dw 2.0
+output application/java
+---
+payload.name
+]]></ee:set-variable>
+                <ee:set-variable variableName="productSku"><![CDATA[%dw 2.0
+output application/java
+---
+payload.sku
+]]></ee:set-variable>
+                <ee:set-variable variableName="productPrice"><![CDATA[%dw 2.0
+output application/java
+---
+payload.price as Number
+]]></ee:set-variable>
+                <ee:set-variable variableName="productActive"><![CDATA[%dw 2.0
+output application/java
+---
+payload.active default true
+]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+
+        <java:invoke-static
+            doc:name="Create product"
+            class="products.ProductService"
+            method="createProduct(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.math.BigDecimal, java.lang.Boolean)"
+            target="createdProduct">
+            <java:args><![CDATA[#[{
+                jdbcUrl: p('db.jdbcUrl'),
+                user: p('db.user'),
+                password: p('db.password'),
+                name: vars.productName,
+                sku: vars.productSku,
+                price: vars.productPrice,
+                active: vars.productActive
+            }]]]></java:args>
+        </java:invoke-static>
+
+        <ee:transform doc:name="Return created product">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.createdProduct
+]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="httpStatus">201</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+    </sub-flow>
+
+</mule>

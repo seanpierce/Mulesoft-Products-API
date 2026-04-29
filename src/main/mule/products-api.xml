@@ -160,7 +160,7 @@ output application/json
         </ee:transform>
         <logger level="INFO" message="get:\products\(id):products-api-config" />
     </flow>
-    <flow name="post:\products:application\json:products-api-config">
-        <logger level="INFO" message="post:\products:application\json:products-api-config" />
-    </flow>
+	<flow name="post:\products:application\json:products-api-config">
+	    <flow-ref name="create-product"/>
+	</flow>
 </mule>

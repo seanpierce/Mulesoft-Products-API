@@ -14,7 +14,7 @@
         <java:invoke-static
             doc:name="Get active products"
             class="products.ProductService"
-            method="getActiveProducts()"
+            method="getActiveProducts(java.lang.String, java.lang.String, java.lang.String)"
             target="products">
                 <java:args><![CDATA[#[{
 			        jdbcUrl: p('db.jdbcUrl'),
