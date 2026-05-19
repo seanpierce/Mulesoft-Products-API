@@ -14,25 +14,29 @@
         <ee:transform doc:name="Extract create product request">
             <ee:variables>
                 <ee:set-variable variableName="productName"><![CDATA[%dw 2.0
-output application/java
----
-payload.name
-]]></ee:set-variable>
+					output application/java
+					---
+					payload.name
+					]]>
+				</ee:set-variable>
                 <ee:set-variable variableName="productSku"><![CDATA[%dw 2.0
-output application/java
----
-payload.sku
-]]></ee:set-variable>
+					output application/java
+					---
+					payload.sku
+					]]>
+				</ee:set-variable>
                 <ee:set-variable variableName="productPrice"><![CDATA[%dw 2.0
-output application/java
----
-payload.price as Number
-]]></ee:set-variable>
+					output application/java
+					---
+					payload.price as Number
+					]]>
+				</ee:set-variable>
                 <ee:set-variable variableName="productActive"><![CDATA[%dw 2.0
-output application/java
----
-payload.active default true
-]]></ee:set-variable>
+					output application/java
+					---
+					payload.active default true
+					]]>
+				</ee:set-variable>
             </ee:variables>
         </ee:transform>
 
@@ -41,24 +45,27 @@ payload.active default true
             class="products.ProductService"
             method="createProduct(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.math.BigDecimal, java.lang.Boolean)"
             target="createdProduct">
-            <java:args><![CDATA[#[{
-                jdbcUrl: p('db.jdbcUrl'),
-                user: p('db.user'),
-                password: p('db.password'),
-                name: vars.productName,
-                sku: vars.productSku,
-                price: vars.productPrice,
-                active: vars.productActive
-            }]]]></java:args>
+            <java:args>
+            	<![CDATA[#[{
+	                jdbcUrl: p('db.jdbcUrl'),
+	                user: p('db.user'),
+	                password: p('db.password'),
+	                name: vars.productName,
+	                sku: vars.productSku,
+	                price: vars.productPrice,
+	                active: vars.productActive
+	            }]]]>
+            </java:args>
         </java:invoke-static>
 
         <ee:transform doc:name="Return created product">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-vars.createdProduct
-]]></ee:set-payload>
+					output application/json
+					---
+					vars.createdProduct
+					]]>
+				</ee:set-payload>
             </ee:message>
             <ee:variables>
                 <ee:set-variable variableName="httpStatus">201</ee:set-variable>

@@ -5,14 +5,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import config.DatabaseConfig;
+
 public class ProductService {
 
-	public static List<Product> getActiveProducts(
-		    String jdbcUrl,
-		    String user,
-		    String password
-		) throws SQLException {
-		    List<Product> products = new ArrayList<Product>();
+	public static List<Product> getActiveProducts(DatabaseConfig dbConfig) throws SQLException {
+		List<Product> products = new ArrayList<Product>();
 
         String sql = """
             SELECT
@@ -27,7 +25,7 @@ public class ProductService {
             """;
 
         try (
-            Connection connection = DriverManager.getConnection(jdbcUrl, user, password);
+            Connection connection = getConnection(dbConfig);
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery()
         ) {
@@ -48,9 +46,7 @@ public class ProductService {
     }
 	
 	public static Product createProduct(
-	    String jdbcUrl,
-	    String user,
-	    String password,
+	    DatabaseConfig dbConfig,
 	    String name,
 	    String sku,
 	    BigDecimal price,
@@ -95,7 +91,7 @@ public class ProductService {
 	        """;
 
 	    try (
-	        Connection connection = DriverManager.getConnection(jdbcUrl, user, password);
+	    	Connection connection = getConnection(dbConfig);
 	        PreparedStatement insertStatement = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)
 	    ) {
 	        insertStatement.setString(1, name);
@@ -132,5 +128,14 @@ public class ProductService {
 	            }
 	        }
 	    }
+	}
+
+	
+	private static Connection getConnection(DatabaseConfig dbConfig) throws SQLException {
+	    return DriverManager.getConnection(
+	        dbConfig.getJdbcUrl(),
+	        dbConfig.getUser(),
+	        dbConfig.getPassword()
+	    );
 	}
 }
