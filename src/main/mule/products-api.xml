@@ -30,9 +30,10 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
                 <ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Bad request"}]]></ee:set-payload>
+							output application/json
+							---
+							{message: "Bad request"}]]>
+						</ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">400</ee:set-variable>
@@ -43,9 +44,10 @@ output application/json
                 <ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Resource not found"}]]></ee:set-payload>
+							output application/json
+							---
+							{message: "Resource not found"}]]>
+						</ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">404</ee:set-variable>
@@ -56,9 +58,10 @@ output application/json
                 <ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Method not allowed"}]]></ee:set-payload>
+							output application/json
+							---
+							{message: "Method not allowed"}]]>
+						</ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">405</ee:set-variable>
@@ -69,9 +72,10 @@ output application/json
                 <ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Not acceptable"}]]></ee:set-payload>
+							output application/json
+							---
+							{message: "Not acceptable"}]]>
+						</ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">406</ee:set-variable>
@@ -82,9 +86,10 @@ output application/json
                 <ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Unsupported media type"}]]></ee:set-payload>
+							output application/json
+							---
+							{message: "Unsupported media type"}]]>
+						</ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">415</ee:set-variable>
@@ -95,9 +100,10 @@ output application/json
                 <ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Not Implemented"}]]></ee:set-payload>
+							output application/json
+							---
+							{message: "Not Implemented"}]]>
+						</ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">501</ee:set-variable>
@@ -122,9 +128,10 @@ output application/json
                 <ee:transform doc:name="Transform Message">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Resource not found"}]]></ee:set-payload>
+							output application/json
+							---
+							{message: "Resource not found"}]]>
+						</ee:set-payload>
                     </ee:message>
                     <ee:variables>
                         <ee:set-variable variableName="httpStatus">404</ee:set-variable>
