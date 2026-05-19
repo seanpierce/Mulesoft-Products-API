@@ -1028,19 +1028,12 @@ GET http://localhost:8081/api/products
 
 ---
 
-## Next Improvements
+## Dependency Injection
 
-Possible future enhancements:
+In a typical Java application, one might use a Spring-style DI process; however, in Mulesoft, we have to do things a bit differently. When using the Mule Java Module, the cleanest pattern is usually:
 
-- Add `GET /products/{id}`
-- Add `POST /products`
-- Add `PUT /products/{id}`
-- Add `DELETE /products/{id}`
-- Move SQL into repository-style Java classes
-- Add custom Java exceptions
-- Add Mule error handling for Java exceptions
-- Add MUnit tests
-- Add request validation
-- Add secure properties for secrets
-- Add environment-specific config files
-- Replace H2 with SQL Server once TCP access is available
+```
+Mule (XML) owns configuration
+Mule injects config values into Java method arguments (via XML)
+Java stays stateless
+```

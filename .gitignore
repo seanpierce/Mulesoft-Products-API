@@ -15,7 +15,6 @@
 .metadata
 bin/**
 tmp/**
-tmp/**/*
 *.tmp
 *.bak
 *.swp
@@ -29,7 +28,7 @@ local.properties
 # External tool builders
 .externalToolBuilders/
 
-# Locally stored "Eclipse launch configurations"
+# Locally stored Eclipse launch configurations
 *.launch
 
 # CDT-specific
@@ -43,21 +42,10 @@ local.properties
 # --------------- #
 target/
 .mule/
-.DS_Store
-velocity.log
-
-# Build output
-target/
-
-# Mule local runtime/cache
-.mule/
 .mule-local/
 
 # Logs
 *.log
-
-# Local config/secrets
-src/main/resources/config/local.properties
 
 # H2 local database files
 *.mv.db
