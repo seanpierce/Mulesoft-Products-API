@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java"
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+      xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+
+    <sub-flow name="create-database-config">
+        <java:invoke-static
+            doc:name="Create database config"
+            class="config.DatabaseConfig"
+            method="of(java.lang.String, java.lang.String, java.lang.String)"
+            target="databaseConfig">
+
+            <java:args><![CDATA[#[{
+                jdbcUrl: p('db.jdbcUrl'),
+                user: p('db.user'),
+                password: p('db.password')
+            }]]]></java:args>
+
+        </java:invoke-static>
+    </sub-flow>
+
+</mule>

@@ -11,18 +11,15 @@
         http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 
     <sub-flow name="get-products">
+           
         <java:invoke-static
             doc:name="Get active products"
             class="products.ProductService"
-            method="getActiveProducts(java.lang.String, java.lang.String, java.lang.String)"
+            method="getActiveProducts(config.DatabaseConfig)"
             target="products">
-                <java:args>
-                	<![CDATA[#[{
-				        jdbcUrl: p('db.jdbcUrl'),
-				        user: p('db.user'),
-				        password: p('db.password')
-				    }]]]>
-	    		</java:args>
+				<java:args><![CDATA[#[{
+				    dbConfig: vars.databaseConfig
+				}]]]></java:args>
 	    </java:invoke-static>
 
         <ee:transform doc:name="Return products">
